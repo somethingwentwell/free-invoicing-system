@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/components/i18n-provider';
@@ -24,10 +25,17 @@ export function AuthForm({ mode }: Props) {
     event.preventDefault();
     setLoading(true);
     setMessage('');
+    const emailRedirectTo =
+      process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL?.trim() ||
+      (typeof window !== 'undefined' ? `${window.location.origin}/login` : '');
 
     const action =
       mode === 'register'
-        ? supabase.auth.signUp({ email, password })
+        ? supabase.auth.signUp({
+            email,
+            password,
+            options: emailRedirectTo ? { emailRedirectTo } : undefined
+          })
         : supabase.auth.signInWithPassword({ email, password });
 
     const { data, error } = await action;
@@ -93,6 +101,13 @@ export function AuthForm({ mode }: Props) {
           required
         />
       </label>
+      {mode === 'login' ? (
+        <p className="-mt-2 text-right text-sm">
+          <Link className="font-semibold text-slate-900 underline-offset-2 hover:underline" href="/forgot-password">
+            {t('forgot_password')}
+          </Link>
+        </p>
+      ) : null}
       <button className="mt-1" disabled={loading} type="submit">
         {loading ? t('please_wait') : mode === 'register' ? t('auth_create_account') : t('sign_in')}
       </button>

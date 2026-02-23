@@ -109,6 +109,8 @@ cp .env.example .env.local
 Required variables:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_AUTH_REDIRECT_URL` (for email confirmation redirect, e.g. `https://your-domain.com/login`)
+- `NEXT_PUBLIC_AUTH_RESET_REDIRECT_URL` (for password reset redirect, e.g. `https://your-domain.com/reset-password`)
 
 ## Database migrations
 Run SQL files in `supabase/migrations`.
@@ -159,6 +161,8 @@ Follow this order:
 3. In project environment variables, add:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   - `NEXT_PUBLIC_AUTH_REDIRECT_URL`
+   - `NEXT_PUBLIC_AUTH_RESET_REDIRECT_URL`
 4. Deploy.
 5. After first deploy, open the app URL and test:
    - register/login
