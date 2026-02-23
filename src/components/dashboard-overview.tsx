@@ -87,6 +87,7 @@ export function DashboardOverview() {
     setWorkspaceForm(EMPTY_SETTINGS_FORM);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     void load();
   }, [organizationId]);

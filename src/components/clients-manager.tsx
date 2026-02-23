@@ -41,6 +41,7 @@ export function ClientsManager() {
     setClients(Array.isArray(data) ? data : []);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     void load();
   }, [organizationId]);

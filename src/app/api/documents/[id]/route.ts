@@ -40,7 +40,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   orderedPhases.forEach((phase, index) => {
     phaseIdByCode.set(`PH${String(index + 1).padStart(2, '0')}`, String(phase.id));
   });
-  let receiptsByPhase = new Map<string, Array<{ id: string; number: string; created_at: string }>>();
+  const receiptsByPhase = new Map<string, Array<{ id: string; number: string; created_at: string }>>();
 
   if (phaseIds.length > 0) {
     const { data: receipts } = await auth.supabase

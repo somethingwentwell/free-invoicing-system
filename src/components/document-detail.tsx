@@ -173,6 +173,7 @@ export function DocumentDetail({ id }: { id: string }) {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     void load();
   }, [id]);

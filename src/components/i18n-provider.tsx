@@ -36,7 +36,7 @@ export function I18nProvider({ initialLang, children }: { initialLang: AppLangua
       setLang,
       t: (key: string) => t(lang, key)
     }),
-    [lang]
+    [lang, setLang]
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
