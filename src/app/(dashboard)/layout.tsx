@@ -22,9 +22,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .select('organization_id, organizations(id, name)')
     .eq('user_id', user.id);
 
-  const organizations = (memberships ?? [])
-    .map((membership) => membership.organizations)
-    .filter((org): org is { id: string; name: string } => Boolean(org));
+  const organizations = (memberships ?? []).flatMap((membership) => {
+    const org = membership.organizations as { id: string; name: string } | Array<{ id: string; name: string }> | null;
+    if (!org) return [];
+    return Array.isArray(org) ? org : [org];
+  });
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
