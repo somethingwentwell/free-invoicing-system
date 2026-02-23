@@ -128,6 +128,22 @@ npm install
 npm run dev
 ```
 
+## Backend admin script: add user
+You can create a Supabase Auth user from backend/admin side with Bash:
+
+```bash
+npm run add:user -- user@example.com 'StrongPassword123!' true
+```
+
+Arguments:
+- `email` (required)
+- `password` (required)
+- `auto_confirm` (optional, `true` or `false`, default `true`)
+
+Required env for this script:
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`)
+
 ## Deployment guide (Supabase -> Vercel)
 Follow this order:
 1. Create Supabase project
