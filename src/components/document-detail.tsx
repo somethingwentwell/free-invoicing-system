@@ -559,20 +559,20 @@ export function DocumentDetail({ id }: { id: string }) {
               {t('export_pdf')}
             </a>
             {backToQuotationHref ? (
-              <Link
+              <a
                 className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-none hover:bg-slate-100"
                 href={backToQuotationHref}
               >
                 {t('back_to_quotation')}
-              </Link>
+              </a>
             ) : null}
             {backToInvoiceHref ? (
-              <Link
+              <a
                 className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-none hover:bg-slate-100"
                 href={backToInvoiceHref}
               >
                 {t('back_to_invoice')}
-              </Link>
+              </a>
             ) : null}
             <button
               type="button"
