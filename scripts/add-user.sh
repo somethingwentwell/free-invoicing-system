@@ -19,7 +19,7 @@ if [[ -f ".env" ]]; then
 fi
 
 SUPABASE_URL="${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}"
-SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+SUPABASE_ADMIN_KEY="${SUPABASE_SECRET_KEY:-${SUPABASE_SERVICE_ROLE_KEY:-}}"
 
 EMAIL="${1:-}"
 PASSWORD="${2:-}"
@@ -36,8 +36,8 @@ if [[ -z "$SUPABASE_URL" ]]; then
   exit 1
 fi
 
-if [[ -z "$SUPABASE_SERVICE_ROLE_KEY" ]]; then
-  echo "Error: SUPABASE_SERVICE_ROLE_KEY is required."
+if [[ -z "$SUPABASE_ADMIN_KEY" ]]; then
+  echo "Error: SUPABASE_SECRET_KEY (preferred) or SUPABASE_SERVICE_ROLE_KEY is required."
   exit 1
 fi
 
@@ -52,8 +52,8 @@ TMP_BODY="$(mktemp)"
 TMP_CODE="$(mktemp)"
 
 curl -sS -X POST "${SUPABASE_URL%/}/auth/v1/admin/users" \
-  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "apikey: ${SUPABASE_ADMIN_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_ADMIN_KEY}" \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"email_confirm\":${AUTO_CONFIRM}}" \
   -o "$TMP_BODY" \
