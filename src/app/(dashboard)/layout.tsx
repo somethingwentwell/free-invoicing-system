@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { createClient } from '@/lib/supabase/server';
@@ -33,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             href="/dashboard"
             className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold tracking-wide text-slate-800"
           >
-            <img src="/logo.svg" alt="Invoicing logo" className="h-6 w-6 rounded-md" />
+            <Image src="/logo.svg" alt="Invoicing logo" width={24} height={24} className="rounded-md" />
             <span>{t(lang, 'app_name')}</span>
           </Link>
           <OrgSelector organizations={organizations} />
@@ -84,7 +85,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               href="/dashboard"
               className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold tracking-wide text-slate-800"
             >
-              <img src="/logo.svg" alt="Invoicing logo" className="h-6 w-6 rounded-md" />
+              <Image src="/logo.svg" alt="Invoicing logo" width={24} height={24} className="rounded-md" />
               <span>{t(lang, 'app_name')}</span>
             </Link>
 
