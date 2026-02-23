@@ -24,7 +24,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   return NextResponse.json(
     (data ?? []).map((member) => ({
       ...member,
-      email: profileMap.get(member.user_id) ?? null
+      email: profileMap.get(member.user_id) ?? null,
+      is_current_user: member.user_id === auth.user?.id
     }))
   );
 }

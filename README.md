@@ -122,6 +122,9 @@ Recommended for a new database:
 For environments that need a one-shot catch-up script for recent schema/policy updates:
 - `100_consolidated_updates.sql`
 
+If you hit workspace/member RLS issues (for example: `new row violates row-level security policy for table "organization_members"`):
+- run `200_consolidated_org_members_rls.sql`
+
 ## Local development
 ```bash
 npm install
@@ -170,6 +173,7 @@ Follow this order:
    - then all remaining migration files in order
 4. If your environment needs quick catch-up for later updates, also run:
    - `100_consolidated_updates.sql`
+   - `200_consolidated_org_members_rls.sql` (org member RLS repair)
 
 ### 3) Deploy to Vercel
 1. Push this repository to GitHub.

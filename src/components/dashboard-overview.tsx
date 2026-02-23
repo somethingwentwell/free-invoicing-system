@@ -20,7 +20,9 @@ interface DocumentsListResponse {
 interface Member {
   id: string;
   role: 'owner' | 'member';
+  user_id: string;
   email: string | null;
+  is_current_user?: boolean;
 }
 
 interface WorkspaceSettings {
@@ -47,7 +49,7 @@ const EMPTY_SETTINGS_FORM: WorkspaceSettingsForm = {
 };
 
 export function DashboardOverview() {
-  const { organizationId } = useActiveOrganization();
+  const { organizationId, setOrganizationId } = useActiveOrganization();
   const { t } = useI18n();
   const [documents, setDocuments] = useState<Doc[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
@@ -55,8 +57,11 @@ export function DashboardOverview() {
   const [workspaceForm, setWorkspaceForm] = useState<WorkspaceSettingsForm>(EMPTY_SETTINGS_FORM);
   const [invite, setInvite] = useState({ email: '', role: 'member' as 'owner' | 'member' });
   const [memberMessage, setMemberMessage] = useState('');
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
   const [workspaceMessage, setWorkspaceMessage] = useState('');
   const [savingWorkspace, setSavingWorkspace] = useState(false);
+  const [deletingWorkspace, setDeletingWorkspace] = useState(false);
+  const [showDeleteWorkspaceWarning, setShowDeleteWorkspaceWarning] = useState(false);
 
   async function load() {
     if (!organizationId) return;
@@ -162,6 +167,35 @@ export function DashboardOverview() {
     setWorkspaceMessage(t('workspace_settings_saved'));
   }
 
+  async function deleteCurrentWorkspace() {
+    if (!organizationId || deletingWorkspace) return;
+
+    setDeletingWorkspace(true);
+    setWorkspaceMessage('');
+
+    const response = await fetch(`/api/organizations/${organizationId}`, { method: 'DELETE' });
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      setDeletingWorkspace(false);
+      setWorkspaceMessage(
+        typeof data?.error === 'string' ? data.error : t('workspace_delete_failed')
+      );
+      return;
+    }
+
+    const orgResponse = await fetch('/api/organizations');
+    const orgData = await orgResponse.json().catch(() => []);
+    const orgList = Array.isArray(orgData) ? orgData : [];
+    const nextId =
+      orgList.find((org: { id?: string }) => typeof org?.id === 'string')?.id ?? '';
+
+    setOrganizationId(nextId);
+    setDeletingWorkspace(false);
+    setShowDeleteWorkspaceWarning(false);
+    setWorkspaceMessage(t('workspace_deleted'));
+  }
+
   async function inviteMember(event: React.FormEvent) {
     event.preventDefault();
     if (!organizationId) return;
@@ -182,6 +216,30 @@ export function DashboardOverview() {
     setMemberMessage(t('member_added_success'));
     await load();
   }
+
+  async function removeMember(memberId: string) {
+    if (!organizationId || deletingMemberId) return;
+
+    const confirmed = window.confirm(t('delete_member_confirm'));
+    if (!confirmed) return;
+
+    setDeletingMemberId(memberId);
+    const response = await fetch(`/api/organizations/${organizationId}/members/${memberId}`, {
+      method: 'DELETE'
+    });
+    const data = await response.json().catch(() => null);
+    setDeletingMemberId(null);
+
+    if (!response.ok) {
+      setMemberMessage(typeof data?.error === 'string' ? data.error : t('member_delete_failed'));
+      return;
+    }
+
+    setMemberMessage(t('member_deleted'));
+    await load();
+  }
+
+  const isCurrentUserOwner = members.some((member) => member.is_current_user && member.role === 'owner');
 
   return (
     <section className="space-y-4">
@@ -256,6 +314,37 @@ export function DashboardOverview() {
           <button type="submit" className="w-full sm:w-auto" disabled={!organizationId || savingWorkspace}>
             {savingWorkspace ? t('please_wait') : t('save_workspace_settings')}
           </button>
+          <button
+            type="button"
+            className="w-full sm:w-auto"
+            onClick={() => setShowDeleteWorkspaceWarning(true)}
+            disabled={!organizationId || deletingWorkspace}
+          >
+            {deletingWorkspace ? t('please_wait') : t('delete_workspace')}
+          </button>
+          {showDeleteWorkspaceWarning ? (
+            <div className="rounded-lg border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
+              <p>{t('delete_workspace_confirm')}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="h-[42px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-none hover:bg-slate-100"
+                  onClick={() => void deleteCurrentWorkspace()}
+                  disabled={!organizationId || deletingWorkspace}
+                >
+                  {deletingWorkspace ? t('please_wait') : t('delete_workspace')}
+                </button>
+                <button
+                  type="button"
+                  className="h-[42px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-none hover:bg-slate-100"
+                  onClick={() => setShowDeleteWorkspaceWarning(false)}
+                  disabled={deletingWorkspace}
+                >
+                  {t('cancel')}
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {workspaceMessage ? <p className="text-sm text-slate-600">{workspaceMessage}</p> : null}
         </form>
@@ -297,8 +386,23 @@ export function DashboardOverview() {
 
         <ul className="space-y-2 text-sm">
           {members.map((member) => (
-            <li key={member.id} className="rounded-xl border border-slate-200/80 bg-white/80 p-2.5">
-              {member.email ?? member.id} ({member.role === 'owner' ? t('owner') : t('member')})
+            <li
+              key={member.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white/80 p-2.5"
+            >
+              <span>
+                {member.email ?? member.id} ({member.role === 'owner' ? t('owner') : t('member')})
+              </span>
+              {isCurrentUserOwner && member.role !== 'owner' && !member.is_current_user ? (
+                <button
+                  type="button"
+                  className="inline-flex h-[34px] items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-700 shadow-none hover:bg-slate-100"
+                  onClick={() => void removeMember(member.id)}
+                  disabled={deletingMemberId === member.id}
+                >
+                  {deletingMemberId === member.id ? t('please_wait') : t('delete')}
+                </button>
+              ) : null}
             </li>
           ))}
         </ul>
