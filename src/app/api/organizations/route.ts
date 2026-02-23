@@ -14,16 +14,16 @@ export async function GET() {
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return NextResponse.json(
-    (data ?? [])
-      .map((item) => {
-        if (!item.organizations) return null;
-        return {
-          id: item.organizations.id,
-          name: item.organizations.name,
-          role: item.role
-        };
-      })
-      .filter(Boolean)
+    (data ?? []).flatMap((item) => {
+      const org = item.organizations as { id: string; name: string } | Array<{ id: string; name: string }> | null;
+      if (!org) return [];
+      const orgs = Array.isArray(org) ? org : [org];
+      return orgs.map((entry) => ({
+        id: entry.id,
+        name: entry.name,
+        role: item.role
+      }));
+    })
   );
 }
 
