@@ -103,8 +103,9 @@ export async function renderDocumentPdf(payload: PdfPayload) {
   pdf.registerFontkit(fontkit);
   const page = pdf.addPage([595, 842]);
   const fontBytes = await loadFontBytes();
-  const font = await pdf.embedFont(fontBytes.regular);
-  const bold = await pdf.embedFont(fontBytes.bold);
+  const fontOptions = { features: { locl: false } };
+  const font = await pdf.embedFont(fontBytes.regular, fontOptions);
+  const bold = await pdf.embedFont(fontBytes.bold, fontOptions);
 
   const left = 50;
   const right = 545;
