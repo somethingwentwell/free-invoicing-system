@@ -33,6 +33,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 
   if (docError) return NextResponse.json({ error: docError.message }, { status: 404 });
+  if (!doc.clients) return NextResponse.json({ error: 'Client not found for this document' }, { status: 404 });
 
   const { data: items, error: itemsError } = await auth.supabase
     .from('document_items')
