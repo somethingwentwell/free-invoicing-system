@@ -1,4 +1,20 @@
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { PDFDocument, rgb } from 'pdf-lib';
+
+let fontBytesPromise: Promise<{ regular: Buffer; bold: Buffer }> | null = null;
+
+function loadFontBytes() {
+  if (!fontBytesPromise) {
+    const fontsDir = path.join(process.cwd(), 'src/lib/fonts');
+    fontBytesPromise = Promise.all([
+      readFile(path.join(fontsDir, 'NotoSansSC-Regular.ttf')),
+      readFile(path.join(fontsDir, 'NotoSansSC-Bold.ttf'))
+    ]).then(([regular, bold]) => ({ regular, bold }));
+  }
+  return fontBytesPromise;
+}
 
 export interface PdfLineItem {
   description: string;
@@ -84,9 +100,11 @@ async function tryEmbedLogo(pdf: PDFDocument, logoUrl: string) {
 
 export async function renderDocumentPdf(payload: PdfPayload) {
   const pdf = await PDFDocument.create();
+  pdf.registerFontkit(fontkit);
   const page = pdf.addPage([595, 842]);
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const fontBytes = await loadFontBytes();
+  const font = await pdf.embedFont(fontBytes.regular);
+  const bold = await pdf.embedFont(fontBytes.bold);
 
   const left = 50;
   const right = 545;
