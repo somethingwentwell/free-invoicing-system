@@ -170,6 +170,25 @@ npm run export:pdf -- Q-0005 output/pdf/Q-0005.pdf
 
 The export command uses the app's existing PDF renderer, writes a local PDF, and returns JSON containing the document URL, authenticated PDF URL, and absolute PDF path. Document numbers that exist in multiple workspaces must be replaced with the document UUID.
 
+## Codex skill
+
+This repository includes the `free-invoicing-system` Codex skill in [`skills/free-invoicing-system`](skills/free-invoicing-system). It covers source development and login-required, browserless operations such as creating or editing quotations, maintaining service breakdowns and optional priced items, exporting PDFs, returning authenticated document/PDF links, and visually checking PDF previews.
+
+Install the skill into Codex, or update an existing installation from the repository copy:
+
+```bash
+mkdir -p ~/.codex/skills
+rsync -a --delete ./skills/free-invoicing-system/ ~/.codex/skills/free-invoicing-system/
+```
+
+Invoke it explicitly in Codex with a request such as:
+
+```text
+Use $free-invoicing-system to update this quotation and return the document link, PDF link, and verified PDF preview.
+```
+
+Normal document operations authenticate with `INVOICE_EMAIL` and `INVOICE_PASSWORD` and use the Supabase publishable configuration from `.env.local`, `.env`, or the current environment. They preserve row-level security and do not require a service-role key or an app browser. Deployed document and PDF links remain protected by the app login.
+
 ## Deployment guide (Supabase -> Vercel)
 Follow this order:
 1. Create Supabase project
