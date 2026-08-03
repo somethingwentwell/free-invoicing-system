@@ -147,6 +147,20 @@ Required env for this script:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`)
 
+## Browserless quotation creation
+
+Create quotations through an authenticated CLI without opening the web UI:
+
+```bash
+INVOICE_EMAIL='user@example.com' \
+INVOICE_PASSWORD='password' \
+npm run create:quotation -- ./quotation.json
+```
+
+The command reads the Supabase URL and publishable key from `.env.local`, `.env`, or the current environment. It signs in as the user, preserves workspace RLS, finds or creates the specified client, calculates totals, assigns a unique quotation number, and creates the line items. Use `--dry-run` to validate and calculate a quotation without connecting to Supabase.
+
+Run `npm run create:quotation -- --help` for the JSON format and required environment variables.
+
 ## Deployment guide (Supabase -> Vercel)
 Follow this order:
 1. Create Supabase project

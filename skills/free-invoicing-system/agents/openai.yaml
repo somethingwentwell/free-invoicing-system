@@ -1,0 +1,4 @@
+interface:
+  display_name: "Free Invoicing System"
+  short_description: "Build and maintain the SMB invoicing app"
+  default_prompt: "Use $free-invoicing-system to implement or explain an invoicing workflow in this repository."
