@@ -111,6 +111,9 @@ Read the latest migrations rather than assuming `001_init.sql` is the final sche
 - CLI authentication variables: `INVOICE_EMAIL` and `INVOICE_PASSWORD`. Connection variables: `NEXT_PUBLIC_SUPABASE_URL` (or `SUPABASE_URL`) and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The script loads `.env.local` and `.env` when present.
 - Quotation JSON accepts `workspace` (exact name or UUID, optional for a user with one workspace), `client`, optional `number`, `issue_date`, optional `due_date`, `currency`, `tax_percentage`, optional `notes`, and one or more `items` with description, positive quantity, and nonnegative unit price.
 - The quotation CLI logs in with `signInWithPassword`, relies on the user's RLS permissions, finds or creates the client, computes two-decimal totals, allocates a unique `Q-####` number, and cleans up the document if item creation fails.
+- Browserless PDF export: run `npm run export:pdf -- <document-id-or-number> [output.pdf]`. It authenticates with the same user, reads only RLS-visible document data, calls the existing `src/lib/pdf.ts` renderer, and returns `document_url`, `pdf_url`, and `pdf_path`.
+- Set `INVOICE_APP_URL` to the deployed app origin to populate the returned links. App and PDF URLs remain login-protected; the local PDF is the agent-preview artifact.
+- After export, render every PDF page with Poppler, visually inspect it, show the first rendered page inline, and cite the PDF file once in the final response.
 - Do not use a service-role key for normal CLI document operations. Do not place credentials in committed JSON files or command arguments; pass them as environment variables.
 - Local setup: copy `.env.example` to `.env.local`, configure Supabase public variables, run `npm install`, then `npm run dev`.
 - Required public variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_AUTH_REDIRECT_URL`, and `NEXT_PUBLIC_AUTH_RESET_REDIRECT_URL`.
