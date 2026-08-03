@@ -161,6 +161,15 @@ The command reads the Supabase URL and publishable key from `.env.local`, `.env`
 
 Run `npm run create:quotation -- --help` for the JSON format and required environment variables.
 
+Export any accessible document with the same authenticated account:
+
+```bash
+INVOICE_APP_URL='https://free-invoicing-system.vercel.app' \
+npm run export:pdf -- Q-0005 output/pdf/Q-0005.pdf
+```
+
+The export command uses the app's existing PDF renderer, writes a local PDF, and returns JSON containing the document URL, authenticated PDF URL, and absolute PDF path. Document numbers that exist in multiple workspaces must be replaced with the document UUID.
+
 ## Deployment guide (Supabase -> Vercel)
 Follow this order:
 1. Create Supabase project

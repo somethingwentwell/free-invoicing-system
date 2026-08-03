@@ -9,7 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "add:user": "bash ./scripts/add-user.sh",
-    "create:quotation": "node ./scripts/create-quotation.mjs"
+    "create:quotation": "node ./scripts/create-quotation.mjs",
+    "export:pdf": "node --experimental-strip-types ./scripts/export-document-pdf.mjs"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

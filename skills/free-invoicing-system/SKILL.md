@@ -1,6 +1,6 @@
 ---
 name: free-invoicing-system
-description: Build, modify, operate, debug, test, or explain the Free Invoicing System in this repository. Use for browserless authenticated CLI/API operations or source work involving its Next.js and Supabase architecture, authentication, workspaces and members, company details, clients, quotations, invoices, receipts, payment phases, payments, document conversion and numbering, templates, dashboard totals, multilingual UI, PDF output, migrations, RLS, deployment, or administration scripts.
+description: Build, modify, operate, debug, test, or explain the Free Invoicing System in this repository. Use for browserless authenticated CLI/API operations or source work involving its Next.js and Supabase architecture, authentication, workspaces and members, company details, clients, quotations, invoices, receipts, payment phases, payments, document conversion and numbering, templates, dashboard totals, PDF links and in-agent PDF previews, multilingual UI, migrations, RLS, deployment, or administration scripts.
 ---
 
 # Free Invoicing System
@@ -20,6 +20,17 @@ description: Build, modify, operate, debug, test, or explain the Free Invoicing 
 4. Use `--dry-run` before a live write when calculations, workspace selection, or optional items are ambiguous.
 5. Inspect and edit the source when a requested browserless operation is missing. Add the smallest authenticated CLI/API surface that reuses existing rules, then validate it.
 6. Use browser automation only when the user explicitly asks for UI interaction or when visual verification is essential and no browserless surface can provide it.
+
+## Return PDF links and previews
+
+After creating or locating a document:
+
+1. Run `npm run export:pdf -- <document-id-or-number> <absolute-output.pdf>` with the normal authenticated environment and `INVOICE_APP_URL` set.
+2. Read the command's JSON result and return both `document_url` and `pdf_url`. State that the URLs require an authenticated app login.
+3. Render every page of `pdf_path` to PNG with the PDF skill and inspect the images for clipping, overlap, missing glyphs, incorrect totals, or broken layout.
+4. Fix the source renderer and re-export when visual QA fails. Do not deliver an unverified PDF.
+5. Show the local PDF as a clickable file citation and embed the rendered first page as an inline image preview using its absolute path. Do not cite the PNG.
+6. Keep PDF exports under `output/pdf/` and temporary page renders under `tmp/pdfs/`.
 
 ## Follow the architecture
 

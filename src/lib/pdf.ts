@@ -47,7 +47,7 @@ export interface PdfPayload {
 }
 
 function wrapText(text: string, maxCharsPerLine: number) {
-  const source = text.replace(/\r\n/g, '\n').trim();
+  const source = text.replace(/\r\n/g, '\n').replace(/[\u2010-\u2015\u2212]/g, '-').trim();
   if (!source) return [];
 
   const paragraphs = source.split('\n');
@@ -193,7 +193,7 @@ export async function renderDocumentPdf(payload: PdfPayload) {
   page.drawLine({ start: { x: tableX, y: y + 4 }, end: { x: right, y: y + 4 }, thickness: 1, color: line });
 
   for (const item of payload.items.slice(0, 16)) {
-    const descLines = wrapText(item.description || '-', 32).slice(0, 3);
+    const descLines = wrapText(item.description || '-', 32).slice(0, 5);
     const rowHeight = Math.max(22, descLines.length * 12 + 8);
 
     if (y - rowHeight < 220) break;
